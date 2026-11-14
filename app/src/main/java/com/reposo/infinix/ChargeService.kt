@@ -13,7 +13,9 @@ import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.os.BatteryManager
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.PowerManager
 import android.provider.Settings
 
@@ -27,16 +29,36 @@ class ChargeService : Service() {
                 // Conectaste el cargador: se abre si el telefono esta bloqueado (o siempre, si asi lo elegiste)
                 Intent.ACTION_POWER_CONNECTED ->
                     if (prefs.enabled && (!prefs.onlyWhenLocked || Launcher.isLockedOrOff(c))) {
-                        Launcher.launch(c)
+                        launchWithRetries()
                     }
                 // Bloqueaste el telefono mientras carga: igual que en iPhone
                 Intent.ACTION_SCREEN_OFF ->
                     if (prefs.enabled && Launcher.isPluggedIn(c) && !StandbyActivity.running) {
                         Launcher.launch(c)
                     }
-                Intent.ACTION_POWER_DISCONNECTED ->
+                Intent.ACTION_POWER_DISCONNECTED -> {
+                    handler.removeCallbacksAndMessages(null)
                     c.getSystemService(NotificationManager::class.java).cancel(Launcher.FULLSCREEN_ID)
+                }
             }
+        }
+    }
+
+    private val handler = Handler(Looper.getMainLooper())
+
+    /**
+     * Abre la pantalla de reposo y lo vuelve a intentar a los 1.5 y 4 segundos,
+     * por si la animacion de carga de XOS la tapo.
+     */
+    private fun launchWithRetries() {
+        handler.removeCallbacksAndMessages(null)
+        Launcher.launch(this)
+        for (delay in longArrayOf(1500L, 4000L)) {
+            handler.postDelayed({
+                if (Prefs(this).enabled && Launcher.isPluggedIn(this) && !StandbyActivity.visible) {
+                    Launcher.launch(this)
+                }
+            }, delay)
         }
     }
 
@@ -74,6 +96,7 @@ class ChargeService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int = START_STICKY
 
     override fun onDestroy() {
+        handler.removeCallbacksAndMessages(null)
         try {
             unregisterReceiver(receiver)
         } catch (e: Exception) {

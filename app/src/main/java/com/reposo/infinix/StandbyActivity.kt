@@ -62,6 +62,17 @@ class StandbyActivity : Activity() {
         registerCompat(this, powerReceiver, IntentFilter(Intent.ACTION_POWER_DISCONNECTED))
     }
 
+    override fun onResume() {
+        super.onResume()
+        visible = true
+        hideSystemBars()
+    }
+
+    override fun onPause() {
+        visible = false
+        super.onPause()
+    }
+
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) hideSystemBars()
@@ -150,5 +161,9 @@ class StandbyActivity : Activity() {
         /** true mientras la pantalla de reposo esta abierta (para no volver a abrirla encima). */
         @Volatile
         var running = false
+
+        /** true mientras la pantalla de reposo se ve al frente. */
+        @Volatile
+        var visible = false
     }
 }
