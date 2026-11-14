@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="Reloj, datos y música mientras cargas"
+            android:textColor="#99FFFFFF"
+            android:textSize="14sp" />
+
+        <!-- ACTIVACION -->
+        <TextView
+            style="@style/SectionTitle"
+            android:text="ACTIVACIÓN" />
+
+        <LinearLayout style="@style/Card">
+
+            <Switch
+                android:id="@+id/sw_enabled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:text="Abrir al conectar el cargador"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+
+            <Switch
+                android:id="@+id/sw_locked"
+                style="@style/OptionSwitch"
+                android:text="Solo con el teléfono bloqueado (como iPhone)" />
+
+            <Button
+                android:id="@+id/btn_preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Vista previa" />
+
+            <Button
+                android:id="@+id/btn_dream"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Usar también como protector de pantalla" />
+        </LinearLayout>
+
+        <!-- PERMISOS -->
+        <TextView
+            style="@style/SectionTitle"
+            android:text="PERMISOS" />
+
+        <LinearLayout style="@style/Card">
+
+            <Button
+                android:id="@+id/btn_perm_notif"
+                style="@style/PermButton" />
+
+            <Button
+                android:id="@+id/btn_perm_overlay"
+                style="@style/PermButton" />
+
+            <Button
+                android:id="@+id/btn_perm_media"
+                style="@style/PermButton" />
+
+            <Button
+                android:id="@+id/btn_perm_battery"
+                style="@style/PermButton" />
+
+            <Button
+                android:id="@+id/btn_perm_location"
+                style="@style/PermButton" />
+
+            <Button
+                android:id="@+id/btn_perm_autostart"
+                style="@style/PermButton"
+                android:text="🚀  Inicio automático (XOS)" />
+
+            <Button
+                android:id="@+id/btn_app_info"
+                style="@style/PermButton"
+                android:text="ℹ️  Información de la app" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Si al dar el acceso a notificaciones aparece «Ajuste restringido»: abre «Información de la app», toca ⋮ arriba a la derecha y elige «Permitir ajustes restringidos». Luego vuelve a intentarlo."
+                android:textColor="#99FFFFFF"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <!-- FONDO -->
+        <TextView
+            style="@style/SectionTitle"
+            android:text="FONDO" />
+
+        <LinearLayout style="@style/Card">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:background="#000000">
+
+                <ImageView
+                    android:id="@+id/bg_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:importantForAccessibility="no"
+                    android:scaleType="centerCrop" />
+
+                <View
+                    android:id="@+id/bg_preview_dim"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#000000" />
+
+                <TextView
+                    android:id="@+id/color_preview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="sans-serif-condensed"
+                    android:includeFontPadding="false"
+                    android:text="12:20"
+                    android:textSize="72sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_pick"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Elegir imagen" />
+
+                <Button
+                    android:id="@+id/btn_clear"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Quitar" />
+            </LinearLayout>
+
+            <RadioGroup
+                android:id="@+id/rg_fit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rb_fill"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Rellenar"
+                    android:textColor="#FFFFFF" />
+
+                <RadioButton
+                    android:id="@+id/rb_fit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Completa"
+                    android:textColor="#FFFFFF" />
+
+                <RadioButton
+                    android:id="@+id/rb_manual"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Manual"
+                    android:textColor="#FFFFFF" />
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/btn_adjust"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Acomodar con los dedos" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Oscurecer fondo"
+                android:textColor="#FFFFFF" />
+
+            <SeekBar
+                android:id="@+id/sb_dim"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="80"
+                android:minHeight="40dp" />
+        </LinearLayout>
+
+        <!-- COLOR -->
+        <TextView
+            style="@style/SectionTitle"
+            android:text="COLOR DEL RELOJ" />
+
+        <LinearLayout style="@style/Card">
+
+            <RadioGroup
+                android:id="@+id/rg_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/rb_color_auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Automático (combina con el fondo)"
+                    android:textColor="#FFFFFF" />
+
+                <RadioButton
+                    android:id="@+id/rb_color_manual"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Elegir color"
+                    android:textColor="#FFFFFF" />
+            </RadioGroup>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/swatches"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+        </LinearLayout>
+
+        <!-- OTROS -->
+        <TextView
+            style="@style/SectionTitle"
+            android:text="OTROS" />
+
+        <LinearLayout style="@style/Card">
+
+            <Switch
+                android:id="@+id/sw_24h"
+                style="@style/OptionSwitch"
+                android:text="Formato 24 horas" />
+
+            <Switch
+                android:id="@+id/sw_weather"
+                style="@style/OptionSwitch"
+                android:text="Mostrar clima" />
+
+            <Switch
+                android:id="@+id/sw_night"
+                style="@style/OptionSwitch"
+                android:text="Atenuar de noche (23:00 a 6:00)" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
