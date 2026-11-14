@@ -76,6 +76,10 @@
                 style="@style/PermButton" />
 
             <Button
+                android:id="@+id/btn_perm_fullscreen"
+                style="@style/PermButton" />
+
+            <Button
                 android:id="@+id/btn_perm_media"
                 style="@style/PermButton" />
 

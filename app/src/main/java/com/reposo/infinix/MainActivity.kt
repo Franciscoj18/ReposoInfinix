@@ -30,6 +30,7 @@ class MainActivity : Activity() {
     private lateinit var swEnabled: Switch
     private lateinit var btnNotif: Button
     private lateinit var btnOverlay: Button
+    private lateinit var btnFullScreen: Button
     private lateinit var btnMedia: Button
     private lateinit var btnBattery: Button
     private lateinit var btnLocation: Button
@@ -60,6 +61,7 @@ class MainActivity : Activity() {
         swEnabled = findViewById(R.id.sw_enabled)
         btnNotif = findViewById(R.id.btn_perm_notif)
         btnOverlay = findViewById(R.id.btn_perm_overlay)
+        btnFullScreen = findViewById(R.id.btn_perm_fullscreen)
         btnMedia = findViewById(R.id.btn_perm_media)
         btnBattery = findViewById(R.id.btn_perm_battery)
         btnLocation = findViewById(R.id.btn_perm_location)
@@ -133,6 +135,17 @@ class MainActivity : Activity() {
         btnOverlay.setOnClickListener {
             open(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")))
         }
+        if (Build.VERSION.SDK_INT >= 34) {
+            btnFullScreen.setOnClickListener {
+                val i = Intent(
+                    Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
+                    Uri.parse("package:$packageName")
+                )
+                if (!open(i)) openAppNotificationSettings()
+            }
+        } else {
+            btnFullScreen.visibility = View.GONE
+        }
         btnMedia.setOnClickListener {
             if (!open(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))) openAppInfo()
         }
@@ -162,6 +175,7 @@ class MainActivity : Activity() {
     private fun refreshPermissions() {
         btnNotif.text = status(Perms.canPostNotifications(this), "Notificaciones")
         btnOverlay.text = status(Perms.canOverlay(this), "Mostrar sobre otras apps (abrir sola)")
+        btnFullScreen.text = status(Perms.canUseFullScreen(this), "Notificación de pantalla completa (encender pantalla)")
         btnMedia.text = status(Perms.hasNotificationAccess(this), "Acceso a notificaciones (música)")
         btnBattery.text = status(Perms.ignoresBatteryOptimizations(this), "Sin restricción de batería")
         btnLocation.text = status(Perms.hasLocation(this), "Ubicación aproximada (clima)")

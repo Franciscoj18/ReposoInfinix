@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.app.NotificationManager
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -42,6 +43,12 @@ object Perms {
 
     fun hasLocation(ctx: Context): Boolean =
         ctx.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    /** Android 14+: permiso para que la notificacion encienda la pantalla bloqueada. */
+    fun canUseFullScreen(ctx: Context): Boolean =
+        if (Build.VERSION.SDK_INT >= 34) {
+            ctx.getSystemService(NotificationManager::class.java).canUseFullScreenIntent()
+        } else true
 
     fun canPostNotifications(ctx: Context): Boolean =
         if (Build.VERSION.SDK_INT >= 33) {

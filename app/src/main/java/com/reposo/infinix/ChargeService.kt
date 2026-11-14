@@ -17,6 +17,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
+import android.os.SystemClock
 import android.provider.Settings
 
 /** Servicio en segundo plano que espera a que conectes el cargador. */
@@ -32,9 +33,10 @@ class ChargeService : Service() {
                         launchWithRetries()
                     }
                 // Bloqueaste el telefono mientras carga: igual que en iPhone
+                // (si el modo reposo ya se veia y tu apagaste la pantalla, se respeta)
                 Intent.ACTION_SCREEN_OFF ->
-                    if (prefs.enabled && Launcher.isPluggedIn(c) && !StandbyActivity.running) {
-                        Launcher.launch(c)
+                    if (prefs.enabled && Launcher.isPluggedIn(c) && !StandbyActivity.userTurnedItOff()) {
+                        launchWithRetries()
                     }
                 Intent.ACTION_POWER_DISCONNECTED -> {
                     handler.removeCallbacksAndMessages(null)
@@ -48,15 +50,17 @@ class ChargeService : Service() {
 
     /**
      * Abre la pantalla de reposo y lo vuelve a intentar a los 1.5 y 4 segundos,
-     * por si la animacion de carga de XOS la tapo.
+     * por si la animacion de carga, el AOD o el bloqueo de XOS la taparon.
      */
     private fun launchWithRetries() {
         handler.removeCallbacksAndMessages(null)
+        val startedAt = SystemClock.elapsedRealtime()
         Launcher.launch(this)
         for (delay in longArrayOf(1500L, 4000L)) {
             handler.postDelayed({
-                if (Prefs(this).enabled && Launcher.isPluggedIn(this) && !StandbyActivity.visible) {
-                    Launcher.launch(this)
+                // Solo si todavia no se ha mostrado desde este intento
+                if (Prefs(this).enabled && Launcher.isPluggedIn(this) && !StandbyActivity.shownSince(startedAt)) {
+                    Launcher.launch(this, alsoNotify = true)
                 }
             }, delay)
         }
@@ -155,14 +159,18 @@ object Launcher {
         )
     }
 
-    fun launch(ctx: Context) {
+    /**
+     * @param alsoNotify en los reintentos, ademas de abrirla directo usa la notificacion
+     * de pantalla completa (la que usan las alarmas para despertar la pantalla bloqueada).
+     */
+    fun launch(ctx: Context, alsoNotify: Boolean = false) {
         val i = Intent(ctx, StandbyActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         // Camino 1: con el permiso "mostrar sobre otras apps" se abre directo.
         if (Settings.canDrawOverlays(ctx)) {
             try {
                 ctx.startActivity(i)
-                return
+                if (!alsoNotify) return
             } catch (e: Exception) {
                 // seguir con el camino 2
             }

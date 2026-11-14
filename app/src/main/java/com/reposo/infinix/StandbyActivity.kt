@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
@@ -53,8 +54,6 @@ class StandbyActivity : Activity() {
         adjusting = intent.getBooleanExtra(EXTRA_ADJUST, false)
         preview = adjusting || intent.getBooleanExtra(EXTRA_PREVIEW, false)
 
-        if (!preview) running = true
-
         controller = StandbyController(this, findViewById(R.id.root), window)
         controller.start()
         if (adjusting) setupAdjust()
@@ -65,11 +64,14 @@ class StandbyActivity : Activity() {
     override fun onResume() {
         super.onResume()
         visible = true
+        resumedAt = SystemClock.elapsedRealtime()
         hideSystemBars()
+        getSystemService(NotificationManager::class.java).cancel(Launcher.FULLSCREEN_ID)
     }
 
     override fun onPause() {
         visible = false
+        pausedAt = SystemClock.elapsedRealtime()
         super.onPause()
     }
 
@@ -85,7 +87,6 @@ class StandbyActivity : Activity() {
     }
 
     override fun onDestroy() {
-        if (!preview) running = false
         controller.stop()
         try {
             unregisterReceiver(powerReceiver)
@@ -158,9 +159,22 @@ class StandbyActivity : Activity() {
         const val EXTRA_PREVIEW = "preview"
         const val EXTRA_ADJUST = "adjust"
 
-        /** true mientras la pantalla de reposo esta abierta (para no volver a abrirla encima). */
+        /** Momento en que la pantalla de reposo dejo de verse por ultima vez. */
         @Volatile
-        var running = false
+        private var pausedAt = 0L
+
+        @Volatile
+        private var resumedAt = 0L
+
+        /** true si la pantalla de reposo se mostro despues de ese momento. */
+        fun shownSince(time: Long): Boolean = visible || resumedAt >= time
+
+        /**
+         * true si el modo reposo se estaba viendo justo cuando se apago la pantalla:
+         * significa que tu la apagaste con el boton y no hay que volver a encenderla.
+         */
+        fun userTurnedItOff(): Boolean =
+            visible || SystemClock.elapsedRealtime() - pausedAt < 2000
 
         /** true mientras la pantalla de reposo se ve al frente. */
         @Volatile
