@@ -35,3 +35,24 @@ Pantalla tipo "modo reposo" de iPhone para Android (probada para Infinix GT 30 P
 
 La firma (`app/reposo.keystore`) es solo para uso personal; con ella las
 actualizaciones se instalan encima sin borrar tus ajustes.
+
+## Estado del proyecto (pausado en la versión 1.2)
+
+Funciona: la pantalla de reposo (reloj, batería, fecha, clima, alarma, música de
+cualquier app, fondo y color), la vista previa y los permisos.
+
+Falla a veces en un Infinix GT 30 Pro con XOS:
+- Al conectar el cargador o al bloquear el teléfono, a veces no aparece.
+- Apagar y volver a encender «Abrir al conectar el cargador» lo arregla por un rato.
+
+Causa más probable: XOS «congela» el servicio en segundo plano después de un tiempo.
+El servicio sigue existiendo (la notificación se ve), pero deja de recibir los avisos
+de «cargador conectado» y «pantalla apagada». Al apagar y encender el interruptor, el
+servicio se reinicia y vuelve a escuchar.
+
+Ideas para retomarlo:
+1. Revisar con `adb logcat` qué pasa en el teléfono cuando no aparece (si llega el
+   aviso del sistema y si XOS bloquea abrir la pantalla).
+2. Reiniciar el servicio solo cada cierto tiempo con AlarmManager, o al desbloquear.
+3. Cerrar por completo la pantalla de reposo al desbloquear (onStop + finish).
+4. Probar el camino del protector de pantalla del sistema (DreamService), si XOS lo permite.
